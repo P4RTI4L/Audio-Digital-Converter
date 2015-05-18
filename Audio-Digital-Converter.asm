@@ -112,19 +112,15 @@ msg5        DC.B  'Well> ', $00
 StackSP                           ; Stack space reserved from here to
                                   ; StackST
 
-            ORG  $3FD2            ; sample ATD interrupt vector setup, do NOT use for HW10
-            DC.W ATDISR
+            ORG  $3FD2            ; ATD interrupt vector setup
 
-            ORG  $3FD6            ; Sample SCI interrupt vector setup, do NOT use for HW10
-            DC.W SCIISR
+            ORG  $3FD6            ; SCI interrupt vector setup
 
-            ORG  $3FF0            ; Sample RTI interrupt vector setup, do NOT use for HW10
+            ORG  $3FF0            ; RTI interrupt vector setup
             DC.W RTIISR
             
             org    $3FEA          ; Interupt vector
             DC.W   ISRTOC2
-
-; For HW10, you must add 
 
             ORG  $3100
 StackST
@@ -196,7 +192,7 @@ loop1       jsr   getcharw         ; type writer - what is typed on key board
             jmp   ADCtest
 
 
-; sample ADC test program - 8 point ADC channel 5, do NOT use for HW10
+; 8 point ADC channel 5
 
 ADCtest     jsr   getcharw         ; type writer - what is typed on key board
             jsr   putchar          ; is displayed on the terminal window
@@ -220,7 +216,7 @@ ADCtest     jsr   getcharw         ; type writer - what is typed on key board
             cmpa  #$61              ; if a entered, start SB data recieve setup
             bne   ADCtest
             
-            jsr   nextline          ; messages
+            jsr   nextline          ; terminal messages
             ldx   #msg8
             jsr   printmsg
             jsr   nextline
@@ -258,7 +254,6 @@ loopp
 
 
 ;***********ATD interrupt service routine***************
-; This is a sample, Do NOT use this for HW10
 ATDISR      LDAA  ATDCTL2          ; check ATD IF
             BITA  #%00000001
             BEQ   atderr1
@@ -278,23 +273,6 @@ atderr1     LDAA  PORTB
 
 atddone     RTI
 ;***********end of ATD interrupt service routine********
-
-
-;***********SCI interrupt service routine***************
-; This is a sample, Do NOT use this for HW10
-SCIISR      NOP                    ; MUST program this routine if you
-            NOP                    ;   are using the SCI interrupt
-            NOP
-            RTI
-;***********end of SCI interrupt service routine********
-
-
-;***********RTI interrupt service routine***************
-; This is a sample, Do NOT use this for HW10
-RTIISR      bset  CRGFLG,%10000000 ; clear RTI IF (Interrupt Flag)
-            inc   ctr2p5m          ; every time the RTI occur, increase interrupt count
-rtidone     RTI
-;***********end of RTI interrupt service routine********
 
 
 ;***********OC7 interrupt service routine***************
@@ -320,12 +298,12 @@ ISRTOC2     ldaa #%00000100      ; clear OC2 interrupt flag
 
 timerinit    
 
-             BSET      TIOS, #%00000100
+             BSET      TIOS,  #%00000100
     
-             BSET      TIE, #%00000100
-             BSET      OC7M, #%10000000
+             BSET      TIE,   #%00000100
+             BSET      OC7M,  #%10000000
     
-             BSET      TTOV, #%00000000
+             BSET      TTOV,  #%00000000
     
              BSET      TSCR1, #%10010000
     
@@ -342,7 +320,6 @@ timerinit
     
 
 ;***********sample AD conversiton*********************
-; This is a sample, Do NOT use this for HW10
 adc08       ldab  #$08             ; do AD conversions 8 times
 adloop      jsr   adc              ; single AD conversion call
             ldaa  ATDDR0H
@@ -353,8 +330,8 @@ adloop      jsr   adc              ; single AD conversion call
             bne   adloop           ; loop 8 times
             rts
             
-adc1024      ldx   #1024             ; do AD conversions 1024 times
-adloop1      jsr   adc              ; single AD conversion call
+adc1024     ldx   #1024            ; do AD conversions 1024 times
+adloop1     jsr   adc              ; single AD conversion call
             ldaa  ATDDR0H
             jsr   putchar                          
             dex   
